@@ -1,0 +1,2988 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>LA CASA — 3D Premium Restaurant & Dining</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    :root {
+      --gold: #d6a85c;
+      --gold-light: #f5d799;
+      --gold-dark: #9f7530;
+      --gold-glow: rgba(214, 168, 92, 0.35);
+      --black: #080706;
+      --dark: #12100d;
+      --card-bg: #171512;
+      --cream: #f6f1e8;
+      --muted: #a69e92;
+      --border: rgba(214, 168, 92, 0.18);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 24px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: var(--black);
+      color: var(--cream);
+      line-height: 1.6;
+      overflow-x: hidden;
+      perspective: 1000px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .container {
+      width: min(1240px, 92%);
+      margin: auto;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d0c0a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold-dark);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold);
+    }
+
+    /* ================= NAVBAR ================= */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: all 0.4s ease;
+    }
+
+    header.scrolled {
+      background: rgba(10, 9, 7, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    nav {
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #111;
+      padding: 3px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #ccc;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--gold);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn-3d-model {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 600;
+      background: rgba(214, 168, 92, 0.08);
+      border-radius: var(--radius-sm);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+
+    .btn-3d-model:hover {
+      background: var(--gold);
+      color: #111;
+      box-shadow: 0 0 20px var(--gold-glow);
+      transform: translateY(-2px);
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 26px;
+      cursor: pointer;
+      color: var(--gold);
+    }
+
+    /* ================= BUTTONS ================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px 32px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #0c0b09;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      transition: all 0.35s ease;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .btn:hover {
+      background: transparent;
+      color: var(--gold-light);
+      box-shadow: 0 0 25px var(--gold-glow);
+      transform: translateY(-3px);
+    }
+
+    .btn-outline {
+      background: rgba(255,255,255,0.03);
+      color: var(--cream);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-outline:hover {
+      background: var(--cream);
+      color: #111;
+      border-color: var(--cream);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+    }
+
+    .badge-3d {
+      background: linear-gradient(135deg, #ff8a00, #e52e71);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 15px rgba(229, 46, 113, 0.5);
+      animation: pulse3d 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse3d {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.85; }
+    }
+
+    /* ================= 3D HERO SECTION ================= */
+    .hero-3d {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: radial-gradient(circle at 65% 50%, #1c1813 0%, #080706 75%);
+      padding: 100px 0 60px;
+    }
+
+    .hero-3d::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(1.5px 1.5px at 20px 30px, rgba(214, 168, 92, 0.3), rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 80px 120px, rgba(214, 168, 92, 0.2), rgba(0,0,0,0));
+      background-size: 150px 150px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1.15fr;
+      gap: 30px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-text-side {
+      max-width: 580px;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 22px;
+      padding: 6px 14px;
+      background: rgba(214, 168, 92, 0.08);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+    }
+
+    .hero-3d h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(48px, 5.8vw, 84px);
+      font-weight: 500;
+      line-height: 0.95;
+      margin-bottom: 24px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-3d h1 span.highlight {
+      color: var(--gold);
+      font-style: italic;
+      text-shadow: 0 0 35px var(--gold-glow);
+    }
+
+    .hero-3d p {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 35px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 35px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .stat-item h4 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 32px;
+      color: var(--gold);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .stat-item p {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+      margin-bottom: 0;
+    }
+
+    /* 3D Canvas Showcase Area */
+    .hero-canvas-side {
+      position: relative;
+      height: 600px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at center, rgba(214, 168, 92, 0.08) 0%, rgba(18, 16, 13, 0.6) 70%);
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(214, 168, 92, 0.05);
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .canvas-container:active {
+      cursor: grabbing;
+    }
+
+    .webgl-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, rgba(214, 168, 92, 0.14), rgba(12, 10, 8, 0.92));
+      color: var(--cream);
+      text-align: center;
+      padding: 30px;
+    }
+
+    .webgl-fallback-card {
+      max-width: 420px;
+      background: rgba(10, 9, 7, 0.7);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 26px;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.5);
+    }
+
+    .webgl-fallback-card .badge-3d {
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .webgl-fallback-card h3 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 0.95;
+      margin-bottom: 10px;
+      color: var(--gold-light);
+    }
+
+    .webgl-fallback-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hall-canvas-card .webgl-fallback,
+    .modal-canvas-area .webgl-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 15;
+    }
+
+    #heroThreeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* 3D Overlays */
+    .canvas-badge-top {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      background: rgba(10, 9, 7, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold-light);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .canvas-controls-hint {
+      position: absolute;
+      bottom: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 9, 7, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 11px;
+      color: #aaa;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+      white-space: nowrap;
+      transition: opacity 0.3s;
+      z-index: 10;
+    }
+
+    /* Dish Selector Bar inside Hero */
+    .hero-dish-selector {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      z-index: 10;
+      background: rgba(10, 9, 7, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .dish-btn {
+      padding: 8px 14px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      color: #aaa;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dish-btn:hover {
+      color: var(--cream);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .dish-btn.active {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #111;
+      font-weight: 700;
+      border-color: var(--gold);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    /* ================= SECTION COMMON ================= */
+    section {
+      padding: 120px 0;
+      position: relative;
+    }
+
+    .section-heading {
+      margin-bottom: 65px;
+    }
+
+    .section-heading.center {
+      text-align: center;
+    }
+
+    .section-heading small {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .section-heading h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(40px, 5vw, 65px);
+      font-weight: 500;
+      line-height: 1.05;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      max-width: 620px;
+      margin-top: 18px;
+      font-size: 15px;
+    }
+
+    /* ================= 3D INTERACTIVE RESTAURANT HALL ================= */
+    .hall-3d-section {
+      background: linear-gradient(180deg, var(--black) 0%, var(--dark) 100%);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .hall-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hall-canvas-card {
+      position: relative;
+      height: 520px;
+      width: 100%;
+      border-radius: var(--radius-lg);
+      background: #0d0c0a;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    }
+
+    #tableThreeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+
+    .hall-overlay-info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(14, 12, 10, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .hall-overlay-info h5 {
+      color: var(--gold);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .hall-overlay-info p {
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .table-legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background: rgba(14, 12, 10, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 10px 15px;
+      border-radius: 30px;
+      border: 1px solid var(--border-subtle);
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #ccc;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .legend-dot.free { background: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
+    .legend-dot.selected { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+    .legend-dot.busy { background: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
+
+    .hall-selection-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 35px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .hall-selection-card h3 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 32px;
+      margin-bottom: 12px;
+      color: var(--cream);
+    }
+
+    .selected-table-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(214, 168, 92, 0.12);
+      border: 1px solid var(--gold);
+      border-radius: 30px;
+      color: var(--gold-light);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+
+    /* ================= 3D MENU SECTION ================= */
+    .menu-section {
+      background: var(--black);
+    }
+
+    .menu-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 50px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 12px 26px;
+      border: 1px solid var(--border-subtle);
+      color: #999;
+      background: rgba(255,255,255,0.02);
+      border-radius: 30px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .tab.active,
+    .tab:hover {
+      background: var(--gold);
+      color: #111;
+      border-color: var(--gold);
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 30px;
+    }
+
+    .dish-card-3d {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-style: preserve-3d;
+    }
+
+    .dish-card-3d::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .dish-card-3d:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--gold);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 25px var(--gold-glow);
+    }
+
+    .dish-card-3d:hover::before {
+      opacity: 1;
+    }
+
+    .dish-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .dish-card-3d h3 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    .dish-card-3d p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .dish-card-price {
+      font-family: "Cormorant Garamond", serif;
+      color: var(--gold);
+      font-size: 26px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .dish-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .btn-view-3d {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(214, 168, 92, 0.1);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-view-3d:hover {
+      background: var(--gold);
+      color: #111;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .btn-add-cart {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--cream);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-add-cart:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ================= 3D MODAL VIEWER ================= */
+    .modal-3d-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(5, 4, 3, 0.92);
+      backdrop-filter: blur(18px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal-3d-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-3d-container {
+      width: min(1080px, 94%);
+      height: min(680px, 90vh);
+      background: #110f0c;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 50px var(--gold-glow);
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--cream);
+      font-size: 18px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 20;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--gold);
+      color: #111;
+      transform: rotate(90deg);
+    }
+
+    .modal-canvas-area {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #231e17 0%, #0c0b09 85%);
+      cursor: grab;
+    }
+
+    .modal-canvas-area:active {
+      cursor: grabbing;
+    }
+
+    #modalThreeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .modal-toolbar {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .tool-btn {
+      padding: 8px 14px;
+      background: rgba(14, 12, 10, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: #ccc;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tool-btn:hover, .tool-btn.active {
+      background: var(--gold);
+      color: #111;
+      border-color: var(--gold);
+    }
+
+    .modal-info-area {
+      padding: 45px 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-left: 1px solid var(--border-subtle);
+      background: #14120e;
+    }
+
+    .modal-info-top h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 38px;
+      color: var(--cream);
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .modal-info-category {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .modal-info-price {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 34px;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .modal-info-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 25px;
+    }
+
+    .dish-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .feature-box {
+      background: rgba(255,255,255,0.03);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .feature-box span {
+      font-size: 11px;
+      color: #888;
+      display: block;
+    }
+
+    .feature-box strong {
+      font-size: 13px;
+      color: var(--cream);
+      font-weight: 600;
+    }
+
+    /* ================= ABOUT SECTION ================= */
+    .about {
+      background: var(--dark);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-image-card {
+      position: relative;
+      height: 580px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .about-image-card img {
+      height: 100%;
+      border-radius: var(--radius-lg);
+      transition: transform 0.6s ease;
+    }
+
+    .about-image-card:hover img {
+      transform: scale(1.04);
+    }
+
+    .about-image-card::after {
+      content: "";
+      position: absolute;
+      inset: 18px -18px -18px 18px;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-lg);
+      z-index: -1;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 22px;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .signature {
+      font-family: "Cormorant Garamond", serif;
+      color: var(--gold);
+      font-size: 38px;
+      font-style: italic;
+      margin-top: 35px;
+    }
+
+    /* ================= SPECIAL BANNER ================= */
+    .special {
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      background:
+        linear-gradient(90deg, rgba(8,7,6,0.94) 0%, rgba(8,7,6,0.5) 60%, rgba(8,7,6,0.2) 100%),
+        url("https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=1900&q=90")
+        center/cover fixed;
+      position: relative;
+    }
+
+    .special-content {
+      max-width: 620px;
+    }
+
+    .special h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(45px, 6vw, 75px);
+      font-weight: 500;
+      line-height: 0.95;
+      margin: 15px 0 25px;
+    }
+
+    /* ================= GALLERY ================= */
+    .gallery {
+      background: var(--black);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      grid-template-rows: 280px 280px;
+      gap: 16px;
+    }
+
+    .gallery-item {
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      position: relative;
+    }
+
+    .gallery-item:first-child {
+      grid-row: span 2;
+    }
+
+    .gallery-item img {
+      height: 100%;
+      transition: transform 0.6s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.08);
+    }
+
+    /* ================= RESERVATION ================= */
+    .reservation {
+      background: #0a0907;
+    }
+
+    .reservation-box {
+      max-width: 960px;
+      margin: auto;
+      padding: 70px 60px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, #181510, #0d0c0a);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+    }
+
+    .reservation-box h2 {
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 52px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .reservation-box > p {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 45px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 16px 20px;
+      background: #0a0907;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: #eee;
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .form-full {
+      grid-column: 1 / -1;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-submit {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    /* ================= CONTACT ================= */
+    .contact {
+      background: var(--dark);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      text-align: center;
+    }
+
+    .contact-card {
+      padding: 45px 30px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.015);
+      transition: transform 0.3s ease;
+    }
+
+    .contact-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold);
+    }
+
+    .contact-icon {
+      color: var(--gold);
+      font-size: 32px;
+      margin-bottom: 18px;
+    }
+
+    .contact-card h3 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .contact-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* ================= FOOTER ================= */
+    footer {
+      padding: 70px 0 30px;
+      background: #060504;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      align-items: center;
+      padding-bottom: 40px;
+    }
+
+    .footer-logo {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 38px;
+      color: var(--gold);
+      letter-spacing: 4px;
+    }
+
+    .socials {
+      display: flex;
+      gap: 14px;
+    }
+
+    .socials a {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border-subtle);
+      display: grid;
+      place-items: center;
+      color: #aaa;
+      transition: all 0.3s;
+    }
+
+    .socials a:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .copyright {
+      padding-top: 30px;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+    }
+
+    /* ================= TOAST NOTIFICATION ================= */
+    .toast-box {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(18, 16, 13, 0.95);
+      border: 1px solid var(--gold);
+      padding: 16px 24px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px var(--gold-glow);
+      color: var(--cream);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 3000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast-box.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ================= RESPONSIVE ================= */
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-canvas-side {
+        height: 480px;
+      }
+      .hall-grid {
+        grid-template-columns: 1fr;
+      }
+      .hall-canvas-card {
+        height: 420px;
+      }
+      .modal-3d-container {
+        grid-template-columns: 1fr;
+        height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-canvas-area {
+        height: 350px;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .nav-links, .nav-actions .btn-3d-model {
+        display: none;
+      }
+      .menu-toggle {
+        display: block;
+      }
+      .nav-links.mobile-active {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        top: 84px;
+        left: 0;
+        width: 100%;
+        padding: 30px;
+        background: rgba(10,9,7,0.98);
+        gap: 20px;
+        border-top: 1px solid var(--border);
+      }
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 50px;
+      }
+      .about-image-card {
+        height: 380px;
+      }
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 220px 220px 220px;
+      }
+      .gallery-item:first-child {
+        grid-row: span 1;
+        grid-column: span 2;
+      }
+      .reservation-box {
+        padding: 40px 24px;
+      }
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-top {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 600px) {
+      section {
+        padding: 80px 0;
+      }
+      .hero-3d h1 {
+        font-size: 52px;
+      }
+      .hero-canvas-side {
+        height: 380px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-full {
+        grid-column: auto;
+      }
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 220px);
+      }
+      .gallery-item:first-child {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header id="header">
+    <div class="container">
+      <nav>
+        <a href="#home" class="logo">
+          LA CASA
+          <span class="logo-badge">3D LIVE</span>
+        </a>
+
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home">Bosh sahifa</a></li>
+          <li><a href="#hero-3d-view">3D Taomlar</a></li>
+          <li><a href="#hall-3d">3D Stol tanlash</a></li>
+          <li><a href="#menu">Menyu</a></li>
+          <li><a href="#about">Biz haqimizda</a></li>
+          <li><a href="#contact">Kontakt</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button class="btn-3d-model" onclick="open3DModal('steak')">
+            <i class="fa-solid fa-cube"></i> 3D Taom Ko'rish
+          </button>
+          <a href="#reservation" class="btn" style="padding: 10px 20px; font-size: 11px;">Stol band qilish</a>
+          <div class="menu-toggle" id="menuToggle">☰</div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+
+  <!-- ================= 3D HERO SHOWCASE ================= -->
+  <section class="hero-3d" id="home">
+    <div class="container">
+      <div class="hero-grid">
+
+        <!-- Text Left -->
+        <div class="hero-text-side">
+          <div class="hero-tag">
+            <i class="fa-solid fa-cube"></i> Interaktiv 3D Gastronomiya
+          </div>
+
+          <h1>
+            Taste the <br><span class="highlight">Extraordinary</span>
+          </h1>
+
+          <p>
+            Har bir taom — bu san'at asari. Real vaqtda 3D modelda taomlarni 360° tomosha qiling, 
+            ingredientlarni o'rganing va o'zingizga ma'qul bo'lgan stolni 3D zal orqali band qiling.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#menu" class="btn">
+              <i class="fa-solid fa-utensils"></i> Menyuni ko‘rish
+            </a>
+            <a href="#hall-3d" class="btn btn-outline">
+              <i class="fa-solid fa-chair"></i> 3D Stol Tanlash
+            </a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h4>100%</h4>
+              <p>Tabiiy mahsulot</p>
+            </div>
+            <div class="stat-item">
+              <h4>360°</h4>
+              <p>3D Taomlar ko'rinishi</p>
+            </div>
+            <div class="stat-item">
+              <h4>15+</h4>
+              <p>Yil tajriba</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D Viewport Right -->
+        <div class="hero-canvas-side" id="hero-3d-view">
+          <div class="canvas-container" id="heroCanvasWrapper">
+            
+            <div class="canvas-badge-top">
+              <span class="badge-3d">3D LIVE</span>
+              <span id="heroDishLabel">T-Bone Gourmet Steak</span>
+            </div>
+
+            <div class="canvas-controls-hint" id="canvasHint">
+              <i class="fa-solid fa-hand-pointer"></i> 360° aylantirish uchun sichqonchani suring
+            </div>
+
+            <!-- Canvas Element -->
+            <canvas id="heroThreeCanvas"></canvas>
+
+            <div class="webgl-fallback" id="heroWebglFallback" style="display: none;">
+              <div class="webgl-fallback-card">
+                <span class="badge-3d">3D Preview</span>
+                <h3>Interactive 3D is unavailable</h3>
+                <p>Your browser cannot create a WebGL context right now, so we switched to a premium static preview while keeping the restaurant experience usable.</p>
+              </div>
+            </div>
+
+            <!-- Dish Selector inside 3D Hero -->
+            <div class="hero-dish-selector">
+              <button class="dish-btn active" onclick="switchHeroDish('steak', this)">
+                <i class="fa-solid fa-drumstick-bite"></i> Steak
+              </button>
+              <button class="dish-btn" onclick="switchHeroDish('pasta', this)">
+                <i class="fa-solid fa-bowl-food"></i> Truffle Pasta
+              </button>
+              <button class="dish-btn" onclick="switchHeroDish('burger', this)">
+                <i class="fa-solid fa-burger"></i> Gourmet Burger
+              </button>
+              <button class="dish-btn" onclick="switchHeroDish('dessert', this)">
+                <i class="fa-solid fa-cake-candles"></i> Fondant
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= 3D RESTAURANT HALL (TABLE BOOKING) ================= -->
+  <section class="hall-3d-section" id="hall-3d">
+    <div class="container">
+
+      <div class="section-heading center">
+        <small><i class="fa-solid fa-map-location-dot"></i> Interaktiv 3D Zal</small>
+        <h2>3D Restoran Zalidan Stol Tanlang</h2>
+        <p style="margin: auto;">
+          3D xaritadagi stollarni bosing, joylashuvini ko'ring va to'g'ridan-to'g'ri o'zingiz yoqtirgan stolni band qiling.
+        </p>
+      </div>
+
+      <div class="hall-grid">
+
+        <!-- 3D Hall Canvas -->
+        <div class="hall-canvas-card">
+          <div class="hall-overlay-info">
+            <h5><i class="fa-solid fa-compass"></i> Asosiy Zal Ko'rinishi</h5>
+            <p>Stol ustiga bosing va tanlang</p>
+          </div>
+
+          <canvas id="tableThreeCanvas"></canvas>
+
+          <div class="table-legend">
+            <div class="legend-item">
+              <span class="legend-dot free"></span> Bo'sh stol
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot selected"></span> Tanlangan stol
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot busy"></span> Band stol
+            </div>
+          </div>
+        </div>
+
+        <!-- Selection Card & Quick Booking -->
+        <div class="hall-selection-card">
+          <span class="badge-3d" style="margin-bottom: 12px; display: inline-block;">Real Vaqt Tanlovi</span>
+          <h3>Tanlangan Stol</h3>
+          
+          <div class="selected-table-badge" id="selectedTableBadge">
+            <i class="fa-solid fa-chair"></i> Stol #2 (4 kishilik — Oyna yonida)
+          </div>
+
+          <p style="color: var(--muted); font-size: 14px; margin-bottom: 25px;">
+            Siz tanlagan stol VIP zonasida, restoran derazasi yonida joylashgan bo'lib, unutilmas shahar manzarasi bilan ta'minlaydi.
+          </p>
+
+          <div class="dish-features" style="margin-bottom: 25px;">
+            <div class="feature-box">
+              <span>Sig'imi:</span>
+              <strong id="tableCapText">4 kishi</strong>
+            </div>
+            <div class="feature-box">
+              <span>Joylashuvi:</span>
+              <strong id="tableZoneText">Oyna yonida</strong>
+            </div>
+          </div>
+
+          <a href="#reservation" class="btn" style="width: 100%;" onclick="syncTableToReservation()">
+            <i class="fa-solid fa-check"></i> Ushbu Stolni Band Qilish
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= 3D MENU SECTION ================= -->
+  <section class="menu-section" id="menu">
+    <div class="container">
+
+      <div class="section-heading center">
+        <small><i class="fa-solid fa-cube"></i> 3D Interaktiv Menyu</small>
+        <h2>Chef's Selection & 3D Taomlar</h2>
+        <p style="margin: auto;">
+          Har bir taomning 3D modelini tomosha qiling, tarkibini ko'ring va buyurtma bering.
+        </p>
+      </div>
+
+      <div class="menu-tabs">
+        <button class="tab active" data-category="all">Barchasi</button>
+        <button class="tab" data-category="main">Asosiy Taomlar</button>
+        <button class="tab" data-category="starter">Starters</button>
+        <button class="tab" data-category="dessert">Desertlar</button>
+      </div>
+
+      <div class="menu-grid">
+
+        <!-- Item 1: Grilled Ribeye -->
+        <div class="dish-card-3d" data-category="main">
+          <div class="dish-card-top">
+            <div>
+              <span class="badge-3d" style="font-size: 9px; padding: 2px 7px;">3D Model</span>
+              <h3 style="margin-top: 6px;">Grilled Ribeye Steak</h3>
+            </div>
+            <div class="dish-card-price">$38</div>
+          </div>
+          <p>Prime mol go'shti, bibariya giyohlari, qovurilgan sabzavotlar va maxsus truffle sousi bilan.</p>
+          <div class="dish-card-footer">
+            <button class="btn-view-3d" onclick="open3DModal('steak')">
+              <i class="fa-solid fa-cube"></i> 3D Ko'rish
+            </button>
+            <button class="btn-add-cart" onclick="quickAddToCart('Grilled Ribeye Steak', 38)">
+              <i class="fa-solid fa-cart-plus"></i> Qo'shish
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 2: Truffle Pasta -->
+        <div class="dish-card-3d" data-category="main">
+          <div class="dish-card-top">
+            <div>
+              <span class="badge-3d" style="font-size: 9px; padding: 2px 7px;">3D Model</span>
+              <h3 style="margin-top: 6px;">Truffle Fettuccine Pasta</h3>
+            </div>
+            <div class="dish-card-price">$24</div>
+          </div>
+          <p>Qo'lda tayyorlangan pasta, qora truffle qirindisi, parmesan pishlog'i va sariyog'li krem sous.</p>
+          <div class="dish-card-footer">
+            <button class="btn-view-3d" onclick="open3DModal('pasta')">
+              <i class="fa-solid fa-cube"></i> 3D Ko'rish
+            </button>
+            <button class="btn-add-cart" onclick="quickAddToCart('Truffle Pasta', 24)">
+              <i class="fa-solid fa-cart-plus"></i> Qo'shish
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 3: Royal Burger -->
+        <div class="dish-card-3d" data-category="main">
+          <div class="dish-card-top">
+            <div>
+              <span class="badge-3d" style="font-size: 9px; padding: 2px 7px;">3D Model</span>
+              <h3 style="margin-top: 6px;">Royal Angus Burger</h3>
+            </div>
+            <div class="dish-card-price">$19</div>
+          </div>
+          <p>Black Angus kotleti, erigan cheddar, karamellangan piyoz, brioche bulochkasi va kartoshka fri.</p>
+          <div class="dish-card-footer">
+            <button class="btn-view-3d" onclick="open3DModal('burger')">
+              <i class="fa-solid fa-cube"></i> 3D Ko'rish
+            </button>
+            <button class="btn-add-cart" onclick="quickAddToCart('Royal Angus Burger', 19)">
+              <i class="fa-solid fa-cart-plus"></i> Qo'shish
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 4: Chocolate Fondant -->
+        <div class="dish-card-3d" data-category="dessert">
+          <div class="dish-card-top">
+            <div>
+              <span class="badge-3d" style="font-size: 9px; padding: 2px 7px;">3D Model</span>
+              <h3 style="margin-top: 6px;">Chocolate Lava Fondant</h3>
+            </div>
+            <div class="dish-card-price">$12</div>
+          </div>
+          <p>Issiq qora shokoladli fondan, vanil muzqaymog'i va yangi terilgan malina mevalari.</p>
+          <div class="dish-card-footer">
+            <button class="btn-view-3d" onclick="open3DModal('dessert')">
+              <i class="fa-solid fa-cube"></i> 3D Ko'rish
+            </button>
+            <button class="btn-add-cart" onclick="quickAddToCart('Chocolate Fondant', 12)">
+              <i class="fa-solid fa-cart-plus"></i> Qo'shish
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 5: Burrata & Tomato -->
+        <div class="dish-card-3d" data-category="starter">
+          <div class="dish-card-top">
+            <div>
+              <span class="badge-3d" style="font-size: 9px; padding: 2px 7px;">3D Model</span>
+              <h3 style="margin-top: 6px;">Burrata & Cherry Tomato</h3>
+            </div>
+            <div class="dish-card-price">$14</div>
+          </div>
+          <p>Yangi italyancha burrata pishlog'i, shirin pomidorlar, rayhon yog'i va qarsildoq non.</p>
+          <div class="dish-card-footer">
+            <button class="btn-view-3d" onclick="open3DModal('burrata')">
+              <i class="fa-solid fa-cube"></i> 3D Ko'rish
+            </button>
+            <button class="btn-add-cart" onclick="quickAddToCart('Burrata & Tomato', 14)">
+              <i class="fa-solid fa-cart-plus"></i> Qo'shish
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 6: Risotto Milanese -->
+        <div class="dish-card-3d" data-category="main">
+          <div class="dish-card-top">
+            <div>
+              <span class="badge-3d" style="font-size: 9px; padding: 2px 7px;">3D Model</span>
+              <h3 style="margin-top: 6px;">Risotto Milanese Saffron</h3>
+            </div>
+            <div class="dish-card-price">$21</div>
+          </div>
+          <p>Carnaroli guruchi, za'faron, parmezan pishlog'i va nozik sariyog' bilan tayyorlangan shohona rizotto.</p>
+          <div class="dish-card-footer">
+            <button class="btn-view-3d" onclick="open3DModal('pasta')">
+              <i class="fa-solid fa-cube"></i> 3D Ko'rish
+            </button>
+            <button class="btn-add-cart" onclick="quickAddToCart('Risotto Milanese', 21)">
+              <i class="fa-solid fa-cart-plus"></i> Qo'shish
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= 3D MODAL VIEWER ================= -->
+  <div class="modal-3d-overlay" id="modal3D">
+    <div class="modal-3d-container">
+      
+      <button class="modal-close-btn" onclick="close3DModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Left 3D Viewport -->
+      <div class="modal-canvas-area">
+        <canvas id="modalThreeCanvas"></canvas>
+
+        <div class="modal-toolbar">
+          <button class="tool-btn active" id="btnAutoRotate" onclick="toggleAutoRotate()">
+            <i class="fa-solid fa-rotate"></i> Aylanish
+          </button>
+          <button class="tool-btn" id="btnSteam" onclick="toggleSteam()">
+            <i class="fa-solid fa-smog"></i> Bug' effekti
+          </button>
+          <button class="tool-btn" id="btnWireframe" onclick="toggleWireframe()">
+            <i class="fa-solid fa-border-none"></i> To'r (Wireframe)
+          </button>
+          <button class="tool-btn" onclick="resetCamera()">
+            <i class="fa-solid fa-camera"></i> Asl holat
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Details & Nutrition -->
+      <div class="modal-info-area">
+        <div class="modal-info-top">
+          <span class="modal-info-category" id="modalDishCategory">Asosiy Taom</span>
+          <h2 id="modalDishTitle">Grilled Ribeye Steak</h2>
+          <div class="modal-info-price" id="modalDishPrice">$38.00</div>
+          <p class="modal-info-desc" id="modalDishDesc">
+            Prime mol go'shti xos pishirilgan, bibariya giyohlari, qovurilgan sabzavotlar va maxsus truffle sousi bilan.
+          </p>
+
+          <div class="dish-features">
+            <div class="feature-box">
+              <span>Tayyorlanish vaqti:</span>
+              <strong id="modalCookTime">15-20 daqiqa</strong>
+            </div>
+            <div class="feature-box">
+              <span>Kaloriya:</span>
+              <strong id="modalCalories">620 kkal</strong>
+            </div>
+            <div class="feature-box">
+              <span>Vazni:</span>
+              <strong id="modalWeight">380 g</strong>
+            </div>
+            <div class="feature-box">
+              <span>Chef tavsiyasi:</span>
+              <strong style="color: var(--gold);">★★★★★ 5.0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-info-bottom">
+          <button class="btn" style="width: 100%;" id="modalAddCartBtn" onclick="addCurrentModalDishToCart()">
+            <i class="fa-solid fa-cart-shopping"></i> Savatga Qo'shish
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= ABOUT SECTION ================= -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+
+        <div class="about-image-card">
+          <img
+            src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=85"
+            alt="LA CASA Restaurant"
+          >
+        </div>
+
+        <div class="about-text">
+          <div class="section-heading">
+            <small>Biz haqimizda</small>
+            <h2>Har bir lahza<br>o‘ziga xos va nafis</h2>
+          </div>
+
+          <p>
+            LA CASA — zamonaviy gastronomiya va an'anaviy ta'mlarning uyg‘unlashgan makoni. Biz eng yaxshi mahalliy va xalqaro mahsulotlarni tanlab, ularni zamonaviy texnikalar yordamida o‘ziga xos taomlarga aylantiramiz.
+          </p>
+
+          <p>
+            Biz uchun restoran faqat ovqatlanish joyi emas. Bu do‘stlar, oila va yaqin insonlar bilan unutilmas vaqt o‘tkaziladigan va estetik zavq bag'ishlaydigan makon.
+          </p>
+
+          <div class="signature">
+            — LA CASA Dining
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= SPECIAL BANNER ================= -->
+  <section class="special">
+    <div class="container">
+      <div class="special-content">
+        <div class="hero-tag">
+          <i class="fa-solid fa-crown"></i> Chef's Special
+        </div>
+
+        <h2>
+          The Art of<br>Fine Dining
+        </h2>
+
+        <p>
+          Har hafta chefimiz tomonidan yaratiladigan maxsus 3D taomlar kolleksiyasi bilan yangi ta'mlarni kashf eting.
+        </p>
+
+        <a href="#reservation" class="btn">
+          <i class="fa-solid fa-calendar-check"></i> Stol band qilish
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= GALLERY ================= -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="section-heading center">
+        <small>Bizning muhit</small>
+        <h2>Restoran Galereyasi</h2>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85" alt="Restaurant interior">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=900&q=85" alt="Restaurant dining">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=85" alt="Food table">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85" alt="Gourmet dish">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=85" alt="Dining atmosphere">
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= RESERVATION ================= -->
+  <section class="reservation" id="reservation">
+    <div class="container">
+      <div class="reservation-box">
+        <h2>Stol Rezervatsiyasi</h2>
+        <p>Maxsus kechangizni oldindan rejalashtiring.</p>
+
+        <form id="reservationForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <input type="text" placeholder="Ismingiz" required id="resName">
+            </div>
+
+            <div class="form-group">
+              <input type="tel" placeholder="Telefon raqamingiz (+998)" required id="resPhone">
+            </div>
+
+            <div class="form-group">
+              <input type="date" required id="resDate">
+            </div>
+
+            <div class="form-group">
+              <select required id="resTableSelect">
+                <option value="2">Stol #2 (4 kishilik — Oyna yonida) [Tanlangan]</option>
+                <option value="1">Stol #1 (2 kishilik — Zal markazi)</option>
+                <option value="3" disabled>Stol #3 (Band)</option>
+                <option value="4">Stol #4 (6 kishilik — VIP Loungeda)</option>
+                <option value="5">Stol #5 (4 kishilik — Terasada)</option>
+              </select>
+            </div>
+
+            <div class="form-group form-full">
+              <textarea placeholder="Qo‘shimcha istaklaringiz yoki maxsus bayram izohi..." id="resNote"></textarea>
+            </div>
+          </div>
+
+          <div class="form-submit">
+            <button class="btn" type="submit">
+              <i class="fa-solid fa-paper-plane"></i> Rezervatsiyani Tasdiqlash
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= CONTACT ================= -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="section-heading center">
+        <small>Biz bilan bog‘laning</small>
+        <h2>Visit LA CASA</h2>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <h3>Manzil</h3>
+          <p>Amir Temur shoh ko'chasi, 15<br>Toshkent, O'zbekiston</p>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+          <h3>Telefon</h3>
+          <p>+998 90 123 45 67<br>+998 71 123 45 67</p>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fa-solid fa-clock"></i></div>
+          <h3>Ish vaqti</h3>
+          <p>Dushanba — Yakshanba<br>11:00 — 23:00</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-logo">
+          LA CASA
+        </div>
+
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        </div>
+      </div>
+
+      <div class="copyright">
+        © 2026 LA CASA 3D Restaurant & Fine Dining. Barcha huquqlar himoyalangan.
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Toast Notification -->
+  <div class="toast-box" id="toastBox">
+    <i class="fa-solid fa-circle-check" style="color: var(--gold); font-size: 18px;"></i>
+    <span id="toastMsg">Amal bajarildi</span>
+  </div>
+
+
+  <!-- ================= 3D THREE.JS SCRIPT LOGIC ================= -->
+  <script>
+    /* ----------------------------------------------------
+       1. DATA DEFINITIONS FOR DISHES & 3D PROCEDURAL GENERATION
+    ---------------------------------------------------- */
+    const DISH_DATA = {
+      steak: {
+        title: "Grilled Ribeye Steak",
+        category: "Asosiy Taom",
+        price: "$38.00",
+        desc: "Marmar mol go'shti (Prime grade), bibariya barglari, qovurilgan gilos pomidorlari va maxsus sariyog'li truffle sousi bilan xushbo'y pishirilgan.",
+        cookTime: "15-20 daqiqa",
+        calories: "620 kkal",
+        weight: "380 g"
+      },
+      pasta: {
+        title: "Truffle Fettuccine Pasta",
+        category: "Asosiy Taom",
+        price: "$24.00",
+        desc: "Qo'lda yoyilgan yangi pasta xamiri, qora truffle qirindisi, parmigiano reggiano va nozik sariyog'li krema bilan uyg'unlashtirilgan.",
+        cookTime: "12-15 daqiqa",
+        calories: "510 kkal",
+        weight: "320 g"
+      },
+      burger: {
+        title: "Royal Angus Burger",
+        category: "Asosiy Taom",
+        price: "$19.00",
+        desc: "Black Angus qovurilgan kotleti, erigan tillarang cheddar pishlog'i, qarsildoq salat bargi, mayin brioche noni va sirli sous.",
+        cookTime: "10-15 daqiqa",
+        calories: "740 kkal",
+        weight: "410 g"
+      },
+      dessert: {
+        title: "Chocolate Lava Fondant",
+        category: "Desert",
+        price: "$12.00",
+        desc: "Issiq oquvchan qora Belgiya shokoladli fondan, nozik vanil muzqaymog'i, shakar kukuni va yangi malina mevalari bilan.",
+        cookTime: "8-10 daqiqa",
+        calories: "430 kkal",
+        weight: "220 g"
+      },
+      burrata: {
+        title: "Burrata & Cherry Tomato",
+        category: "Starter",
+        price: "$14.00",
+        desc: "Yumshoq italyancha burrata pishlog'i, pishgan shirin pomidorlar, rayhon pesto sousi va sarg'ish zaytun moyi.",
+        cookTime: "5-7 daqiqa",
+        calories: "340 kkal",
+        weight: "260 g"
+      }
+    };
+
+    let currentModalKey = 'steak';
+
+    /* Helper: Procedural 3D Dish Generator in Three.js */
+    function create3DDishGroup(type, isWireframe = false) {
+      const group = new THREE.Group();
+
+      // 1. Luxury Porcelain Plate with Gold Rim
+      const plateMat = new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        roughness: 0.15,
+        metalness: 0.2,
+        wireframe: isWireframe
+      });
+      const rimMat = new THREE.MeshStandardMaterial({
+        color: 0xd6a85c,
+        roughness: 0.3,
+        metalness: 0.9,
+        wireframe: isWireframe
+      });
+
+      // Plate base
+      const plateGeo = new THREE.CylinderGeometry(2.4, 2.0, 0.18, 48);
+      const plateMesh = new THREE.Mesh(plateGeo, plateMat);
+      plateMesh.position.y = -0.1;
+      plateMesh.receiveShadow = true;
+      group.add(plateMesh);
+
+      // Plate Gold Ring
+      const ringGeo = new THREE.TorusGeometry(2.35, 0.04, 16, 64);
+      const ringMesh = new THREE.Mesh(ringGeo, rimMat);
+      ringMesh.rotation.x = Math.PI / 2;
+      ringMesh.position.y = 0.01;
+      group.add(ringMesh);
+
+      // Inner plate depression
+      const innerGeo = new THREE.CylinderGeometry(2.0, 1.8, 0.06, 40);
+      const innerMat = new THREE.MeshStandardMaterial({ color: 0x181614, roughness: 0.3 });
+      const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+      innerMesh.position.y = 0.01;
+      group.add(innerMesh);
+
+      // 2. Specific Food Geometries based on Type
+      if (type === 'steak') {
+        // Steak Meat Slab
+        const meatGeo = new THREE.BoxGeometry(1.9, 0.45, 1.3);
+        const meatMat = new THREE.MeshStandardMaterial({
+          color: 0x542316,
+          roughness: 0.6,
+          wireframe: isWireframe
+        });
+        const steakMesh = new THREE.Mesh(meatGeo, meatMat);
+        steakMesh.position.set(0, 0.28, 0);
+        steakMesh.rotation.y = 0.3;
+        steakMesh.castShadow = true;
+        group.add(steakMesh);
+
+        // Grill Marks
+        const grillMat = new THREE.MeshBasicMaterial({ color: 0x1a0a05 });
+        for (let i = -0.6; i <= 0.6; i += 0.3) {
+          const mark = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.47, 1.2), grillMat);
+          mark.position.set(i, 0.29, 0);
+          mark.rotation.y = 0.3 + 0.5;
+          group.add(mark);
+        }
+
+        // Rosemary Sprig & Butter on Top
+        const butterGeo = new THREE.BoxGeometry(0.4, 0.15, 0.4);
+        const butterMat = new THREE.MeshStandardMaterial({ color: 0xffe680, roughness: 0.2 });
+        const butter = new THREE.Mesh(butterGeo, butterMat);
+        butter.position.set(0.2, 0.55, 0.1);
+        group.add(butter);
+
+        // Asparagus & Cherry Tomatoes
+        const vegMat = new THREE.MeshStandardMaterial({ color: 0x3d6e24, roughness: 0.5 });
+        const tomatoMat = new THREE.MeshStandardMaterial({ color: 0xc0292b, roughness: 0.3 });
+
+        for (let i = 0; i < 3; i++) {
+          const asp = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.8, 12), vegMat);
+          asp.rotation.z = Math.PI / 2;
+          asp.rotation.y = -0.4;
+          asp.position.set(-0.3, 0.15, -0.6 + i * 0.18);
+          group.add(asp);
+        }
+
+        const t1 = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), tomatoMat);
+        t1.position.set(0.9, 0.24, -0.5);
+        group.add(t1);
+
+        const t2 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), tomatoMat);
+        t2.position.set(1.1, 0.2, -0.2);
+        group.add(t2);
+
+      } else if (type === 'pasta') {
+        // Fettuccine Pasta Nest (Swirl of Toruses & Spheres)
+        const pastaMat = new THREE.MeshStandardMaterial({
+          color: 0xf5d998,
+          roughness: 0.4,
+          wireframe: isWireframe
+        });
+
+        for (let i = 0; i < 6; i++) {
+          const torus = new THREE.Mesh(new THREE.TorusGeometry(0.6 + (i%3)*0.2, 0.12, 12, 32), pastaMat);
+          torus.rotation.x = Math.PI / 2 + (i * 0.2);
+          torus.rotation.y = (i * 0.5);
+          torus.position.set(Math.sin(i)*0.2, 0.18 + i * 0.08, Math.cos(i)*0.2);
+          torus.castShadow = true;
+          group.add(torus);
+        }
+
+        // Shaved Black Truffles
+        const truffleMat = new THREE.MeshStandardMaterial({ color: 0x1f1915, roughness: 0.8 });
+        for (let i = 0; i < 8; i++) {
+          const flake = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.02, 0.15), truffleMat);
+          flake.position.set((Math.random()-0.5)*1.1, 0.5 + Math.random()*0.3, (Math.random()-0.5)*1.1);
+          flake.rotation.set(Math.random(), Math.random(), Math.random());
+          group.add(flake);
+        }
+
+        // Basil Leaves
+        const basilMat = new THREE.MeshStandardMaterial({ color: 0x27ae60, roughness: 0.4 });
+        const basil = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.4, 4), basilMat);
+        basil.position.set(0, 0.8, 0);
+        basil.rotation.x = 0.5;
+        group.add(basil);
+
+      } else if (type === 'burger') {
+        // Bottom Bun
+        const bunMat = new THREE.MeshStandardMaterial({ color: 0xd49b4b, roughness: 0.5, wireframe: isWireframe });
+        const botBun = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.0, 0.35, 32), bunMat);
+        botBun.position.y = 0.2;
+        group.add(botBun);
+
+        // Patty
+        const pattyMat = new THREE.MeshStandardMaterial({ color: 0x3d1d11, roughness: 0.7 });
+        const patty = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.35, 32), pattyMat);
+        patty.position.y = 0.55;
+        group.add(patty);
+
+        // Melted Cheese Drapes
+        const cheeseMat = new THREE.MeshStandardMaterial({ color: 0xffb300, roughness: 0.3 });
+        const cheese = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.08, 1.5), cheeseMat);
+        cheese.position.y = 0.75;
+        cheese.rotation.y = 0.4;
+        group.add(cheese);
+
+        // Tomato Slice & Lettuce
+        const lettuceMat = new THREE.MeshStandardMaterial({ color: 0x4caf50, roughness: 0.6 });
+        const lettuce = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.18, 8, 24), lettuceMat);
+        lettuce.rotation.x = Math.PI / 2;
+        lettuce.position.y = 0.85;
+        group.add(lettuce);
+
+        const tomatoSliceMat = new THREE.MeshStandardMaterial({ color: 0xd32f2f, roughness: 0.3 });
+        const tomatoSlice = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.1, 24), tomatoSliceMat);
+        tomatoSlice.position.y = 1.0;
+        group.add(tomatoSlice);
+
+        // Top Bun Dome
+        const topBun = new THREE.Mesh(new THREE.SphereGeometry(1.15, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), bunMat);
+        topBun.position.y = 1.05;
+        group.add(topBun);
+
+        // Sesame seeds
+        const seedMat = new THREE.MeshBasicMaterial({ color: 0xfff2cc });
+        for (let i = 0; i < 24; i++) {
+          const seed = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.02, 0.08), seedMat);
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.random() * (Math.PI / 3);
+          seed.position.set(
+            1.16 * Math.sin(phi) * Math.cos(theta),
+            1.05 + 1.16 * Math.cos(phi),
+            1.16 * Math.sin(phi) * Math.sin(theta)
+          );
+          seed.rotation.set(Math.random(), Math.random(), Math.random());
+          group.add(seed);
+        }
+
+      } else if (type === 'dessert') {
+        // Chocolate Fondant Cylinder
+        const cakeMat = new THREE.MeshStandardMaterial({ color: 0x2b170c, roughness: 0.8, wireframe: isWireframe });
+        const cake = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.0, 0.8, 32), cakeMat);
+        cake.position.y = 0.45;
+        cake.castShadow = true;
+        group.add(cake);
+
+        // Molten Lava Glaze
+        const glazeMat = new THREE.MeshStandardMaterial({ color: 0x120803, roughness: 0.15 });
+        const glaze = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.05, 32), glazeMat);
+        glaze.position.y = 0.86;
+        group.add(glaze);
+
+        // Vanilla Ice Cream Scoop
+        const iceMat = new THREE.MeshStandardMaterial({ color: 0xfffaed, roughness: 0.4 });
+        const scoop = new THREE.Mesh(new THREE.SphereGeometry(0.45, 24, 24), iceMat);
+        scoop.position.set(0.9, 0.48, 0.2);
+        group.add(scoop);
+
+        // Berries (Raspberries & Blueberries)
+        const raspMat = new THREE.MeshStandardMaterial({ color: 0xba1339, roughness: 0.3 });
+        const berry1 = new THREE.Mesh(new THREE.DodecahedronGeometry(0.2, 1), raspMat);
+        berry1.position.set(0, 0.95, 0);
+        group.add(berry1);
+
+        const blueMat = new THREE.MeshStandardMaterial({ color: 0x202b54, roughness: 0.3 });
+        const b1 = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), blueMat);
+        b1.position.set(-0.5, 0.16, 0.7);
+        group.add(b1);
+
+      } else if (type === 'burrata') {
+        // Smooth Burrata Cheese Pouch
+        const cheeseMat = new THREE.MeshStandardMaterial({ color: 0xfbfbf8, roughness: 0.25, wireframe: isWireframe });
+        const burrata = new THREE.Mesh(new THREE.SphereGeometry(0.9, 32, 24), cheeseMat);
+        burrata.scale.set(1, 0.8, 1);
+        burrata.position.y = 0.65;
+        group.add(burrata);
+
+        // Tied knot on top
+        const knot = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.08, 12, 16), cheeseMat);
+        knot.position.y = 1.35;
+        knot.rotation.x = Math.PI / 2;
+        group.add(knot);
+
+        // Colorful Tomatoes around
+        const tomMat1 = new THREE.MeshStandardMaterial({ color: 0xd63031, roughness: 0.3 });
+        const tomMat2 = new THREE.MeshStandardMaterial({ color: 0xf39c12, roughness: 0.3 });
+
+        for (let i = 0; i < 6; i++) {
+          const t = new THREE.Mesh(
+            new THREE.SphereGeometry(0.22, 16, 16),
+            i % 2 === 0 ? tomMat1 : tomMat2
+          );
+          const angle = (i / 6) * Math.PI * 2;
+          t.position.set(Math.cos(angle) * 1.3, 0.24, Math.sin(angle) * 1.3);
+          group.add(t);
+        }
+      }
+
+      return group;
+    }
+
+    /* Helper: Steam Particle System */
+    function createSteamParticles() {
+      const particleCount = 45;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const scales = new Float32Array(particleCount);
+
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 1.0;
+        positions[i * 3 + 1] = 0.5 + Math.random() * 1.8;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 1.0;
+        scales[i] = Math.random() * 0.15 + 0.05;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const material = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.25,
+        transparent: true,
+        opacity: 0.25,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+
+      const particleSystem = new THREE.Points(geometry, material);
+      return particleSystem;
+    }
+
+
+    /* ----------------------------------------------------
+       2. HERO 3D THREE.JS CANVAS SCENE
+    ---------------------------------------------------- */
+    let heroScene, heroCamera, heroRenderer, heroControls;
+    let heroDishGroup, heroSteamGroup;
+    let currentHeroDishType = 'steak';
+
+    function showWebGLFallback(targetId) {
+      const fallback = document.getElementById(targetId);
+      if (fallback) fallback.style.display = 'flex';
+    }
+
+    function hideWebGLFallback(targetId) {
+      const fallback = document.getElementById(targetId);
+      if (fallback) fallback.style.display = 'none';
+    }
+
+    function initHero3D() {
+      const container = document.getElementById('heroCanvasWrapper');
+      const canvas = document.getElementById('heroThreeCanvas');
+      if (!container || !canvas) return;
+
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      try {
+        const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!context) {
+          throw new Error('WebGL context unavailable');
+        }
+
+        // Scene & Camera
+        heroScene = new THREE.Scene();
+        heroCamera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+        heroCamera.position.set(0, 3.2, 5.2);
+
+        // Renderer
+        heroRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        heroRenderer.setSize(width, height);
+        heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        heroRenderer.shadowMap.enabled = true;
+        heroRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // OrbitControls
+        heroControls = new THREE.OrbitControls(heroCamera, canvas);
+        heroControls.enableDamping = true;
+        heroControls.dampingFactor = 0.06;
+        heroControls.maxPolarAngle = Math.PI / 2 - 0.05; // don't go below table
+        heroControls.minDistance = 3.0;
+        heroControls.maxDistance = 8.0;
+        heroControls.autoRotate = true;
+        heroControls.autoRotateSpeed = 1.6;
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xfff3e0, 0.9);
+        heroScene.add(ambientLight);
+
+        const mainSpot = new THREE.SpotLight(0xffeedd, 2.4, 20, Math.PI / 4, 0.4, 1);
+        mainSpot.position.set(4, 7, 5);
+        mainSpot.castShadow = true;
+        mainSpot.shadow.mapSize.width = 1024;
+        mainSpot.shadow.mapSize.height = 1024;
+        heroScene.add(mainSpot);
+
+        const goldRimLight = new THREE.PointLight(0xd6a85c, 1.8, 10);
+        goldRimLight.position.set(-4, 3, -3);
+        heroScene.add(goldRimLight);
+
+        // Load initial dish
+        heroDishGroup = create3DDishGroup(currentHeroDishType);
+        heroScene.add(heroDishGroup);
+
+        // Steam
+        heroSteamGroup = createSteamParticles();
+        heroScene.add(heroSteamGroup);
+
+        // Animation Loop
+        function animateHero() {
+          requestAnimationFrame(animateHero);
+
+          // Update Steam particles upward drift
+          if (heroSteamGroup) {
+            const positions = heroSteamGroup.geometry.attributes.position.array;
+            for (let i = 1; i < positions.length; i += 3) {
+              positions[i] += 0.012;
+              if (positions[i] > 2.8) {
+                positions[i] = 0.5;
+              }
+            }
+            heroSteamGroup.geometry.attributes.position.needsUpdate = true;
+          }
+
+          heroControls.update();
+          heroRenderer.render(heroScene, heroCamera);
+        }
+        animateHero();
+
+        // Window Resize Listener
+        window.addEventListener('resize', () => {
+          if (!container || !heroCamera || !heroRenderer) return;
+          const newW = container.clientWidth;
+          const newH = container.clientHeight;
+          heroCamera.aspect = newW / newH;
+          heroCamera.updateProjectionMatrix();
+          heroRenderer.setSize(newW, newH);
+        });
+      } catch (error) {
+        console.warn('Hero 3D scene failed to initialize:', error);
+        showWebGLFallback('heroWebglFallback');
+      }
+    }
+
+    function switchHeroDish(type, btn) {
+      if (!heroScene) return;
+
+      currentHeroDishType = type;
+
+      // Update button styling
+      document.querySelectorAll('.dish-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      // Update label
+      const names = {
+        steak: 'T-Bone Gourmet Steak',
+        pasta: 'Truffle Fettuccine Pasta',
+        burger: 'Royal Angus Burger',
+        dessert: 'Chocolate Lava Fondant'
+      };
+      const label = document.getElementById('heroDishLabel');
+      if (label) label.textContent = names[type] || 'Gourmet Dish';
+
+      // Remove previous dish and add new
+      if (heroDishGroup) heroScene.remove(heroDishGroup);
+      heroDishGroup = create3DDishGroup(type);
+      heroScene.add(heroDishGroup);
+
+      // Smooth bounce animation
+      heroDishGroup.scale.set(0.1, 0.1, 0.1);
+      let progress = 0;
+      function popIn() {
+        progress += 0.08;
+        const scale = Math.min(1.0, progress);
+        heroDishGroup.scale.set(scale, scale, scale);
+        if (progress < 1.0) requestAnimationFrame(popIn);
+      }
+      popIn();
+    }
+
+
+    /* ----------------------------------------------------
+       3. 3D RESTAURANT HALL CANVAS (TABLE BOOKING)
+    ---------------------------------------------------- */
+    let hallScene, hallCamera, hallRenderer, hallControls;
+    let tableMeshes = [];
+    let selectedTableNum = 2;
+
+    const TABLES_DATA = [
+      { id: 1, num: 1, x: -3.2, z: -1.5, cap: '2 kishi', zone: 'Zal markazi', status: 'free' },
+      { id: 2, num: 2, x: 3.2, z: -1.5, cap: '4 kishi', zone: 'Oyna yonida', status: 'free' },
+      { id: 3, num: 3, x: -3.2, z: 2.2, cap: '4 kishi', zone: 'Shinam burchak', status: 'busy' },
+      { id: 4, num: 4, x: 3.2, z: 2.2, cap: '6 kishi', zone: 'VIP Lounge', status: 'free' },
+      { id: 5, num: 5, x: 0, z: 0.5, cap: '4 kishi', zone: 'Markaziy Terasa', status: 'free' }
+    ];
+
+    function initHall3D() {
+      const canvas = document.getElementById('tableThreeCanvas');
+      if (!canvas) return;
+
+      const container = canvas.parentElement;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      try {
+        const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!context) {
+          throw new Error('WebGL context unavailable');
+        }
+
+        hallScene = new THREE.Scene();
+        hallScene.background = new THREE.Color(0x0e0c0a);
+
+        hallCamera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+        hallCamera.position.set(0, 8.5, 9.5);
+
+        hallRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+        hallRenderer.setSize(width, height);
+        hallRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        hallRenderer.shadowMap.enabled = true;
+
+        hallControls = new THREE.OrbitControls(hallCamera, canvas);
+        hallControls.enableDamping = true;
+        hallControls.dampingFactor = 0.08;
+        hallControls.maxPolarAngle = Math.PI / 2.2;
+        hallControls.target.set(0, 0, 0);
+
+        // Floor
+        const floorGeo = new THREE.PlaneGeometry(16, 12);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x171410, roughness: 0.8 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        hallScene.add(floor);
+
+        // Floor Grid Lines
+        const grid = new THREE.GridHelper(16, 16, 0xd6a85c, 0x28231c);
+        grid.position.y = 0.01;
+        hallScene.add(grid);
+
+        // Warm Ambient & Ceiling Spotlights
+        const ambLight = new THREE.AmbientLight(0xffe8cc, 0.8);
+        hallScene.add(ambLight);
+
+        const spot = new THREE.SpotLight(0xfff5e6, 2.0, 25, Math.PI / 3);
+        spot.position.set(0, 10, 0);
+        spot.castShadow = true;
+        hallScene.add(spot);
+
+        // Build 3D Tables
+        TABLES_DATA.forEach(data => {
+          const tableGroup = new THREE.Group();
+          tableGroup.position.set(data.x, 0, data.z);
+          tableGroup.userData = data;
+
+          // Table Top
+          const isSelected = (data.num === selectedTableNum);
+          let statusColor = 0x2ecc71; // Green
+          if (data.status === 'busy') statusColor = 0xe74c3c; // Red
+          if (isSelected) statusColor = 0xd6a85c; // Gold
+
+          const topGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.12, 32);
+          const topMat = new THREE.MeshStandardMaterial({
+            color: isSelected ? 0x2b2216 : 0x1e1a15,
+            roughness: 0.3
+          });
+          const tableTop = new THREE.Mesh(topGeo, topMat);
+          tableTop.position.y = 0.9;
+          tableTop.castShadow = true;
+          tableGroup.add(tableTop);
+
+          // Table Leg
+          const legGeo = new THREE.CylinderGeometry(0.12, 0.25, 0.9, 16);
+          const legMat = new THREE.MeshStandardMaterial({ color: 0xd6a85c, metalness: 0.8, roughness: 0.3 });
+          const leg = new THREE.Mesh(legGeo, legMat);
+          leg.position.y = 0.45;
+          tableGroup.add(leg);
+
+          // Table Base Ring
+          const baseGeo = new THREE.CylinderGeometry(0.7, 0.7, 0.05, 24);
+          const base = new THREE.Mesh(baseGeo, legMat);
+          base.position.y = 0.03;
+          tableGroup.add(base);
+
+          // Chairs around table
+          for (let i = 0; i < 4; i++) {
+            const angle = (i / 4) * Math.PI * 2;
+            const chairGroup = new THREE.Group();
+            chairGroup.position.set(Math.cos(angle) * 1.5, 0, Math.sin(angle) * 1.5);
+            chairGroup.rotation.y = -angle - Math.PI / 2;
+
+            const seat = new THREE.Mesh(
+              new THREE.BoxGeometry(0.45, 0.08, 0.45),
+              new THREE.MeshStandardMaterial({ color: 0x33281d, roughness: 0.6 })
+            );
+            seat.position.y = 0.5;
+            chairGroup.add(seat);
+
+            const back = new THREE.Mesh(
+              new THREE.BoxGeometry(0.45, 0.4, 0.06),
+              new THREE.MeshStandardMaterial({ color: 0xd6a85c, metalness: 0.5 })
+            );
+            back.position.set(0, 0.72, -0.2);
+            chairGroup.add(back);
+
+            tableGroup.add(chairGroup);
+          }
+
+          // Glowing Status Indicator Beacon on table center
+          const beaconGeo = new THREE.SphereGeometry(0.18, 16, 16);
+          const beaconMat = new THREE.MeshStandardMaterial({
+            color: statusColor,
+            emissive: statusColor,
+            emissiveIntensity: 0.8
+          });
+          const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+          beacon.position.y = 1.15;
+          beacon.name = 'beacon';
+          tableGroup.add(beacon);
+
+          // Mini dish on table
+          const miniPlate = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.3, 0.25, 0.04, 16),
+            new THREE.MeshStandardMaterial({ color: 0xeeeeee })
+          );
+          miniPlate.position.set(0.3, 0.98, 0.3);
+          tableGroup.add(miniPlate);
+
+          hallScene.add(tableGroup);
+          tableMeshes.push(tableGroup);
+        });
+
+        // Raycaster for clicking tables
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        canvas.addEventListener('click', (event) => {
+          const rect = canvas.getBoundingClientRect();
+          mouse.x = ((event.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
+          mouse.y = -((event.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
+
+          raycaster.setFromCamera(mouse, hallCamera);
+          const intersects = raycaster.intersectObjects(hallScene.children, true);
+
+          if (intersects.length > 0) {
+            // Find root table group
+            let hitObj = intersects[0].object;
+            while (hitObj.parent && hitObj.parent !== hallScene) {
+              hitObj = hitObj.parent;
+            }
+
+            if (hitObj.userData && hitObj.userData.num) {
+              if (hitObj.userData.status === 'busy') {
+                showToast(`Stol #${hitObj.userData.num} hozirda band! Iltimos, boshqa stol tanlang.`);
+                return;
+              }
+
+              selectTable(hitObj.userData);
+            }
+          }
+        });
+
+        function animateHall() {
+          requestAnimationFrame(animateHall);
+          hallControls.update();
+          hallRenderer.render(hallScene, hallCamera);
+        }
+        animateHall();
+
+        window.addEventListener('resize', () => {
+          if (!container || !hallCamera || !hallRenderer) return;
+          const newW = container.clientWidth;
+          const newH = container.clientHeight;
+          hallCamera.aspect = newW / newH;
+          hallCamera.updateProjectionMatrix();
+          hallRenderer.setSize(newW, newH);
+        });
+      } catch (error) {
+        console.warn('Hall 3D scene failed to initialize:', error);
+        showWebGLFallback('heroWebglFallback');
+      }
+    }
+
+    function selectTable(data) {
+      selectedTableNum = data.num;
+
+      // Update UI texts
+      document.getElementById('selectedTableBadge').innerHTML = `<i class="fa-solid fa-chair"></i> Stol #${data.num} (${data.cap} — ${data.zone})`;
+      document.getElementById('tableCapText').textContent = data.cap;
+      document.getElementById('tableZoneText').textContent = data.zone;
+
+      // Update Reservation form dropdown
+      const sel = document.getElementById('resTableSelect');
+      if (sel) {
+        sel.value = data.num.toString();
+      }
+
+      // Update 3D beacon colors
+      tableMeshes.forEach(tGroup => {
+        const beacon = tGroup.getObjectByName('beacon');
+        if (beacon) {
+          if (tGroup.userData.num === selectedTableNum) {
+            beacon.material.color.setHex(0xd6a85c);
+            beacon.material.emissive.setHex(0xd6a85c);
+          } else if (tGroup.userData.status === 'busy') {
+            beacon.material.color.setHex(0xe74c3c);
+            beacon.material.emissive.setHex(0xe74c3c);
+          } else {
+            beacon.material.color.setHex(0x2ecc71);
+            beacon.material.emissive.setHex(0x2ecc71);
+          }
+        }
+      });
+
+      showToast(`Stol #${data.num} tanlandi (${data.zone})`);
+    }
+
+    function syncTableToReservation() {
+      showToast(`Stol #${selectedTableNum} rezervatsiya formasiga biriktirildi!`);
+    }
+
+
+    /* ----------------------------------------------------
+       4. 3D MODAL VIEWER LOGIC
+    ---------------------------------------------------- */
+    let modalScene, modalCamera, modalRenderer, modalControls;
+    let modalDishGroup, modalSteamGroup;
+    let isWireframeActive = false;
+    let isSteamActive = true;
+
+    function initModal3D() {
+      const canvas = document.getElementById('modalThreeCanvas');
+      if (!canvas) return;
+
+      const container = canvas.parentElement;
+      const width = container.clientWidth || 500;
+      const height = container.clientHeight || 450;
+
+      modalScene = new THREE.Scene();
+      modalCamera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+      modalCamera.position.set(0, 3.2, 4.8);
+
+      modalRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      modalRenderer.setSize(width, height);
+      modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      modalControls = new THREE.OrbitControls(modalCamera, canvas);
+      modalControls.enableDamping = true;
+      modalControls.dampingFactor = 0.08;
+      modalControls.maxPolarAngle = Math.PI / 2 - 0.05;
+      modalControls.minDistance = 2.5;
+      modalControls.maxDistance = 7.0;
+      modalControls.autoRotate = true;
+      modalControls.autoRotateSpeed = 2.0;
+
+      // Lights
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.9);
+      modalScene.add(ambLight);
+
+      const spot = new THREE.SpotLight(0xffeedd, 2.5, 15, Math.PI / 3);
+      spot.position.set(3, 6, 4);
+      modalScene.add(spot);
+
+      const backLight = new THREE.PointLight(0xd6a85c, 1.8, 10);
+      backLight.position.set(-3, 3, -3);
+      modalScene.add(backLight);
+
+      function animateModal() {
+        requestAnimationFrame(animateModal);
+
+        if (modalSteamGroup && isSteamActive) {
+          const positions = modalSteamGroup.geometry.attributes.position.array;
+          for (let i = 1; i < positions.length; i += 3) {
+            positions[i] += 0.015;
+            if (positions[i] > 2.8) positions[i] = 0.5;
+          }
+          modalSteamGroup.geometry.attributes.position.needsUpdate = true;
+        }
+
+        modalControls.update();
+        modalRenderer.render(modalScene, modalCamera);
+      }
+      animateModal();
+    }
+
+    function open3DModal(key) {
+      currentModalKey = key;
+      const data = DISH_DATA[key] || DISH_DATA.steak;
+
+      // Populate Texts
+      document.getElementById('modalDishTitle').textContent = data.title;
+      document.getElementById('modalDishCategory').textContent = data.category;
+      document.getElementById('modalDishPrice').textContent = data.price;
+      document.getElementById('modalDishDesc').textContent = data.desc;
+      document.getElementById('modalCookTime').textContent = data.cookTime;
+      document.getElementById('modalCalories').textContent = data.calories;
+      document.getElementById('modalWeight').textContent = data.weight;
+
+      // Show Modal
+      const modal = document.getElementById('modal3D');
+      modal.classList.add('active');
+
+      if (!modalScene) {
+        initModal3D();
+      }
+
+      // Resize Canvas
+      setTimeout(() => {
+        const canvas = document.getElementById('modalThreeCanvas');
+        if (canvas && modalCamera && modalRenderer) {
+          const w = canvas.parentElement.clientWidth;
+          const h = canvas.parentElement.clientHeight;
+          modalCamera.aspect = w / h;
+          modalCamera.updateProjectionMatrix();
+          modalRenderer.setSize(w, h);
+        }
+      }, 50);
+
+      // Load Dish in Modal
+      loadDishInModal(key);
+    }
+
+    function loadDishInModal(key) {
+      if (!modalScene) return;
+
+      if (modalDishGroup) modalScene.remove(modalDishGroup);
+      if (modalSteamGroup) modalScene.remove(modalSteamGroup);
+
+      modalDishGroup = create3DDishGroup(key, isWireframeActive);
+      modalScene.add(modalDishGroup);
+
+      modalSteamGroup = createSteamParticles();
+      if (isSteamActive) modalScene.add(modalSteamGroup);
+
+      resetCamera();
+    }
+
+    function close3DModal() {
+      const modal = document.getElementById('modal3D');
+      modal.classList.remove('active');
+    }
+
+    function toggleAutoRotate() {
+      if (!modalControls) return;
+      modalControls.autoRotate = !modalControls.autoRotate;
+      const btn = document.getElementById('btnAutoRotate');
+      btn.classList.toggle('active', modalControls.autoRotate);
+    }
+
+    function toggleSteam() {
+      isSteamActive = !isSteamActive;
+      const btn = document.getElementById('btnSteam');
+      btn.classList.toggle('active', isSteamActive);
+
+      if (modalSteamGroup && modalScene) {
+        if (isSteamActive) modalScene.add(modalSteamGroup);
+        else modalScene.remove(modalSteamGroup);
+      }
+    }
+
+    function toggleWireframe() {
+      isWireframeActive = !isWireframeActive;
+      const btn = document.getElementById('btnWireframe');
+      btn.classList.toggle('active', isWireframeActive);
+      loadDishInModal(currentModalKey);
+    }
+
+    function resetCamera() {
+      if (!modalCamera || !modalControls) return;
+      modalCamera.position.set(0, 3.2, 4.8);
+      modalControls.target.set(0, 0.3, 0);
+    }
+
+    function addCurrentModalDishToCart() {
+      const data = DISH_DATA[currentModalKey];
+      if (data) {
+        showToast(`${data.title} savatga qo'shildi!`);
+        close3DModal();
+      }
+    }
+
+    function quickAddToCart(title, price) {
+      showToast(`${title} ($${price}) savatga qo'shildi!`);
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const text = document.getElementById('toastMsg');
+      if (box && text) {
+        text.textContent = msg;
+        box.classList.add('show');
+        setTimeout(() => box.classList.remove('show'), 3000);
+      }
+    }
+
+
+    /* ----------------------------------------------------
+       5. GENERAL UI SCRIPTS (NAVBAR, TABS, FORM)
+    ---------------------------------------------------- */
+    // Navbar on scroll
+    const header = document.getElementById("header");
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 50) header.classList.add("scrolled");
+      else header.classList.remove("scrolled");
+    });
+
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("mobile-active");
+    });
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => navLinks.classList.remove("mobile-active"));
+    });
+
+    // Menu filtering
+    const tabs = document.querySelectorAll(".tab");
+    const menuItems = document.querySelectorAll(".dish-card-3d");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(item => item.classList.remove("active"));
+        tab.classList.add("active");
+
+        const category = tab.dataset.category;
+        menuItems.forEach(item => {
+          if (category === "all" || item.dataset.category === category) {
+            item.style.display = "flex";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      });
+    });
+
+    // Reservation Form
+    const resForm = document.getElementById("reservationForm");
+    resForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("resName").value;
+      const table = document.getElementById("resTableSelect").value;
+      showToast(`Rahmat, ${name}! Stol #${table} uchun rezervatsiyangiz qabul qilindi.`);
+      resForm.reset();
+    });
+
+    // Close modal with Escape key or clicking outside
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close3DModal();
+    });
+
+    document.getElementById('modal3D').addEventListener('click', (e) => {
+      if (e.target.id === 'modal3D') close3DModal();
+    });
+
+    // Initialize 3D Scenes on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initHero3D();
+      initHall3D();
+    });
+  </script>
+
+</body>
+</html>

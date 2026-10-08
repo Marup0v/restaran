@@ -1,0 +1,41 @@
+from django.urls import path
+
+from .views import (
+    CartAPIView,
+    CartItemAPIView,
+    CategoriesAPIView,
+    CustomerAuthView,
+    DishAPIView,
+    JWTLoginView,
+    KitchenTelegramAuthView,
+    KitchenQueueView,
+    MenuAPIView,
+    OrderDetailAPIView,
+    OrderCancelAPIView,
+    OrderListAPIView,
+    OrderStatusAPIView,
+    ReportDailyAPIView,
+    TopDishesAPIView,
+)
+
+urlpatterns = [
+    path('api/auth/token/', JWTLoginView.as_view(), name='token_obtain_pair'),
+    path('api/auth/telegram/', CustomerAuthView.as_view(), name='telegram_auth'),
+    path('api/auth/telegram/chef/', KitchenTelegramAuthView.as_view(), name='telegram_chef_auth'),
+    path('api/categories/', CategoriesAPIView.as_view(), name='categories'),
+    path('api/categories/<int:pk>/', CategoriesAPIView.as_view(), name='category_detail'),
+    path('api/dishes/', DishAPIView.as_view(), name='dishes'),
+    path('api/dishes/<int:pk>/', DishAPIView.as_view(), name='dish_detail'),
+    path('api/menu/', MenuAPIView.as_view(), name='menu'),
+    path('api/menu/<int:pk>/', MenuAPIView.as_view(), name='menu_detail'),
+    path('api/cart/', CartAPIView.as_view(), name='cart'),
+    path('api/cart/items/', CartItemAPIView.as_view(), name='cart_items_create'),
+    path('api/cart/items/<int:pk>/', CartItemAPIView.as_view(), name='cart_items_detail'),
+    path('api/orders/', OrderListAPIView.as_view(), name='orders'),
+    path('api/orders/<int:pk>/', OrderDetailAPIView.as_view(), name='order_detail'),
+    path('api/orders/<int:pk>/status/', OrderStatusAPIView.as_view(), name='order_status'),
+    path('api/orders/<int:pk>/cancel/', OrderCancelAPIView.as_view(), name='order_cancel'),
+    path('api/kitchen/queue/', KitchenQueueView.as_view(), name='kitchen_queue'),
+    path('api/reports/daily/', ReportDailyAPIView.as_view(), name='daily_report'),
+    path('api/reports/top-dishes/', TopDishesAPIView.as_view(), name='top_dishes'),
+]
