@@ -34,6 +34,15 @@ from .serializers import (
 
 User = get_user_model()
 
+WEB_CART_PRODUCTS = {
+    'grilled-ribeye': {'name': 'Grilled Ribeye Steak', 'price': 38},
+    'truffle-pasta': {'name': 'Truffle Fettuccine Pasta', 'price': 24},
+    'royal-angus-burger': {'name': 'Royal Angus Burger', 'price': 19},
+    'chocolate-fondant': {'name': 'Chocolate Lava Fondant', 'price': 12},
+    'burrata-tomato': {'name': 'Burrata & Cherry Tomato', 'price': 14},
+    'risotto-milanese': {'name': 'Risotto Milanese Saffron', 'price': 21},
+}
+
 
 class LargeResultsPagination(PageNumberPagination):
     page_size = 20
@@ -249,6 +258,64 @@ class CartAPIView(APIView):
         if not customer:
             raise Http404('Mijoz topilmadi.')
         return customer
+
+
+class WebCartAPIView(APIView):
+    permission_classes = [AllowAny]
+    session_key = 'web_cart'
+
+    def get(self, request):
+        return Response(self._cart_data(request))
+
+    def post(self, request):
+        product_id = request.data.get('product_id')
+        if not isinstance(product_id, str) or product_id not in WEB_CART_PRODUCTS:
+            return Response({'detail': 'Bunday taom topilmadi.'}, status=404)
+
+        raw_quantity = request.data.get('quantity', 1)
+        if isinstance(raw_quantity, bool) or not str(raw_quantity).strip().isdecimal():
+            return Response({'detail': 'Miqdor butun son bo‘lishi kerak.'}, status=400)
+        quantity = int(raw_quantity)
+        if not 1 <= quantity <= 50:
+            return Response({'detail': 'Miqdor 1 dan 50 gacha bo‘lishi kerak.'}, status=400)
+
+        cart = request.session.get(self.session_key, {})
+        updated_quantity = cart.get(product_id, 0) + quantity
+        if updated_quantity > 50:
+            return Response({'detail': 'Bir taomdan ko‘pi bilan 50 dona qo‘shish mumkin.'}, status=400)
+        cart[product_id] = updated_quantity
+        request.session[self.session_key] = cart
+        return Response(self._cart_data(request), status=201)
+
+    def delete(self, request):
+        product_id = request.data.get('product_id')
+        if product_id is None:
+            request.session.pop(self.session_key, None)
+        elif not isinstance(product_id, str) or product_id not in WEB_CART_PRODUCTS:
+            return Response({'detail': 'Bunday taom topilmadi.'}, status=404)
+        else:
+            cart = request.session.get(self.session_key, {})
+            cart.pop(product_id, None)
+            request.session[self.session_key] = cart
+        return Response(self._cart_data(request))
+
+    def _cart_data(self, request):
+        cart = request.session.get(self.session_key, {})
+        items = []
+        for product_id, quantity in cart.items():
+            product = WEB_CART_PRODUCTS.get(product_id)
+            if product:
+                items.append({
+                    'product_id': product_id,
+                    **product,
+                    'quantity': quantity,
+                    'total': product['price'] * quantity,
+                })
+        return {
+            'items': items,
+            'count': sum(item['quantity'] for item in items),
+            'total': sum(item['total'] for item in items),
+        }
 
 
 class CartItemAPIView(APIView):

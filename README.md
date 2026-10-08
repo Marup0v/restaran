@@ -34,6 +34,10 @@ Brauzerda `http://127.0.0.1:8000/api/menu/` manzilini oching. API JWT ishlatadi.
 ```
 
 Bot menyuni ko'rsatadi, taomni serverdagi savatga qo'shadi va buyurtma yaratadi.
+Tokenni `.env.example`ga emas, faqat lokal `.env` fayliga yozing; `.env`ni Git'ga
+qo'shmang. Veb-sahifadagi “Qo'shish” tugmalari `/api/web-cart/` orqali sessiyaga
+savatni saqlaydi. `GET /api/web-cart/` savatni ko'rsatadi, `DELETE /api/web-cart/`
+esa uni bo'shatadi.
 
 ## PostgreSQL
 

@@ -16,6 +16,7 @@ from .views import (
     OrderStatusAPIView,
     ReportDailyAPIView,
     TopDishesAPIView,
+    WebCartAPIView,
 )
 
 urlpatterns = [
@@ -28,6 +29,7 @@ urlpatterns = [
     path('api/dishes/<int:pk>/', DishAPIView.as_view(), name='dish_detail'),
     path('api/menu/', MenuAPIView.as_view(), name='menu'),
     path('api/menu/<int:pk>/', MenuAPIView.as_view(), name='menu_detail'),
+    path('api/web-cart/', WebCartAPIView.as_view(), name='web_cart'),
     path('api/cart/', CartAPIView.as_view(), name='cart'),
     path('api/cart/items/', CartItemAPIView.as_view(), name='cart_items_create'),
     path('api/cart/items/<int:pk>/', CartItemAPIView.as_view(), name='cart_items_detail'),
